@@ -1,0 +1,60 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+const int maxv = 1000, inf = 10000000;
+//邻接矩阵版
+int n, G[maxv][maxv];
+int d[maxv];//顶点到达各点的最短路径
+bool vis[maxv] = { false };
+
+void dijkstra(int s) {
+    //s为起点
+    fill(d, d + maxv, inf);
+    d[s] = 0;//顶点到达自身距离为0
+    for (int i = 0; i < n; ++i) {
+        int u = -1, Min = inf;
+        for (int j = 0; j < n; j++) {
+            if (vis[j] == false && d[j] < Min) {
+                u = j;
+                Min = d[j];//找到通往下一个结点的最短路径
+            }
+        }
+        if (u == -1)return;//找不到接下来的结点
+        vis[u] = true;//表示该点已被访问
+        for (int v = 0; v < n; v++) {
+            if (vis[v] == false && G[u][v] != inf && d[u] + G[u][v] < d[v])//这里的false条件没有搞懂，应该是不能回退，先记着好了
+                d[v] = d[u] + G[u][v];//该点的最短路径需要优化
+        }
+    }
+    
+}
+//邻接表版
+struct Node {
+    int v, dis=inf;
+    Node(int a) :v(a){}
+};
+//可以将数组d变成priority_queue队列，这样就可以很简单求出最小的路径的
+vector<Node>adj[maxv];
+bool vi[maxv] = { false };
+void Dijkstra_a(int s) {
+    fill(d, d + maxv, inf);
+    Node frist = Node(s);
+    for (int i = 0; i < n; i++) {
+        int mini = inf,v=-1;
+        d[s] = 0;
+        for (int j = 0; j < n; j++) {
+            if (vi[s] == false && d[s] < mini) {
+                v = j;
+                mini = d[s];
+            }
+        }
+        if (v == -1)return;
+        vi[v] = true;
+        for (int k = 0; k < adj[v].size(); k++) {
+            Node u = adj[v][k];
+            if (d[v] + u.dis < d[u.v]&&vi[u.v]==false)
+                d[u.v] = d[v] + u.dis;
+        }
+
+    }
+}
